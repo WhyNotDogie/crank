@@ -610,7 +610,7 @@ impl Build {
         let current_dir = std::env::current_dir()?;
         let manifest_path_str;
         let mut args = if self.device {
-            vec!["run", "nightly", "cargo", "build"]
+            vec!["run", "nightly", "--", "cargo", "build"]
         } else {
             vec!["build"]
         };
