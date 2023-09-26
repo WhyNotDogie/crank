@@ -451,7 +451,7 @@ impl Build {
         );
         #[cfg(not(target_os = "macos"))]
         let data_path = PathBuf::from(env::var("PLAYDATE_MOUNT_POINT").unwrap_or(format!(
-            "/run/media/{}/PLAYDATE",
+            "/media/{}/PLAYDATE",
             env::var("USER").expect("user")
         )));
 
@@ -473,6 +473,7 @@ impl Build {
         #[cfg(target_os = "linux")]
         println!("If your OS does not automatically mount your Playdate, please do so now.");
 
+        println!("{}", data_path.display());
         while !data_path.exists() {
             thread::sleep(duration);
         }
@@ -609,7 +610,7 @@ impl Build {
         let current_dir = std::env::current_dir()?;
         let manifest_path_str;
         let mut args = if self.device {
-            vec!["+nightly", "build"]
+            vec!["run", "nightly", "cargo", "build"]
         } else {
             vec!["build"]
         };
@@ -671,7 +672,7 @@ impl Build {
             Default::default()
         };
 
-        let mut command = Command::new("cargo");
+        let mut command = Command::new("rustup");
         command.args(args);
         command.envs(envs);
         info!("build command: {:?}", command);
@@ -865,6 +866,7 @@ impl Package {
                 .arg(target_archive)
                 .status()?;
         }
+        println!("got here");
         #[cfg(target_os = "linux")]
         if self.reveal {
             let _ = Command::new("xdg-open").arg(parent).status()?;
