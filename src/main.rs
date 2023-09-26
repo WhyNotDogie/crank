@@ -629,7 +629,7 @@ impl Build {
             args.push(example);
             (example.clone(), format!("examples/"))
         } else {
-            args.push("--lib");
+            // args.push("--lib");
             if let Some(target_name) = self.get_target_name(&opt)? {
                 (target_name.clone(), "".to_string())
             } else {
