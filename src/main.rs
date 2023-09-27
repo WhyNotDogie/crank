@@ -612,7 +612,7 @@ impl Build {
         let mut args = if self.device {
             vec!["run", "nightly", "--", "cargo", "build"]
         } else {
-            vec!["build"]
+            vec!["run", "nightly", "--", "cargo", "build"]
         };
 
         let project_path = if let Some(manifest_path) = opt.manifest_path.as_ref() {
@@ -629,7 +629,7 @@ impl Build {
             args.push(example);
             (example.clone(), format!("examples/"))
         } else {
-            // args.push("--lib");
+            args.push("--lib");
             if let Some(target_name) = self.get_target_name(&opt)? {
                 (target_name.clone(), "".to_string())
             } else {
@@ -682,7 +682,7 @@ impl Build {
             bail!("cargo failed with error {:?}", status);
         }
 
-        let overall_target_dir = project_path.join("target");
+        let overall_target_dir = env::var("CRANK_TARGET_DIR").unwrap_or(project_path.join("target").display().to_string()).into();
         let game_title = crank_manifest
             .get_target(&target_name)
             .and_then(|target| target.metadata.as_ref())
@@ -694,7 +694,7 @@ impl Build {
         if dest_path.exists() {
             fs::remove_dir_all(&dest_path).unwrap_or_else(|_err| ());
         }
-        let mut target_dir = project_path.join("target");
+        let mut target_dir = overall_target_dir;
         let dir_name = if self.release { "release" } else { "debug" };
         if self.device {
             target_dir = target_dir.join("thumbv7em-none-eabihf").join(dir_name);
